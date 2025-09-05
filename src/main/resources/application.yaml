@@ -1,0 +1,106 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /ecommerce-management
+    encoding:
+      force: true
+  shutdown: graceful
+spring:
+  application:
+    name: ecommerce-management
+  profiles:
+    active: ${ecommerce-management.spring.profiles.active:dev}
+  datasource:
+    url: ${ecommerce-management.datasource.url}
+    password: ${ecommerce-management.datasource.password}
+    username: ${ecommerce-management.datasource.username}
+    hikari:
+      maximum-pool-size: ${ecommerce-management.datasource.hikari.maximum-pool-size}
+  web:
+    resources:
+      add-mappings: false
+  jpa:
+    open-in-view: ${ecommerce-management.jpa.open-in-view}
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: ${ecommerce-management.jpa.properties.hibernate.enable_lazy_load_no_trans}
+    hibernate:
+      ddl-auto: ${ecommerce-management.jpa.hibernate.ddl-auto}
+    show-sql: ${ecommerce-management.jpa.show-sql}
+  h2:
+    console:
+      enabled: ${ecommerce-management.h2.console.enabled}
+      path: ${ecommerce-management.h2.console.path}
+      settings:
+        web-allow-others: ${ecommerce-management.h2.console.settings.web-allow-others}
+  flyway:
+    enabled: ${ecommerce-management.flyway.enabled}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    clean-disabled: ${ecommerce-management.flyway.clean-disabled:true}
+    validate-on-migrate: ${ecommerce-management.flyway.validate-on-migrate:true}
+    installed-by: ${spring.application.name}
+    placeholder-replacement: true
+    fail-on-missing-locations: true
+    encoding: UTF-8
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    default-property-inclusion: non_null
+    
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: orderPaid:dev.luanfernandes.adapter.out.messaging.event.OrderPaidEvent
+      acks: all
+      retries: 3
+      batch-size: 16384
+      buffer-memory: 33554432
+      
+    consumer:
+      group-id: ecommerce-api-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: dev.luanfernandes.adapter.out.messaging.event
+        spring.json.type.mapping: orderPaid:dev.luanfernandes.adapter.out.messaging.event.OrderPaidEvent
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      
+    listener:
+      ack-mode: manual
+      concurrency: 3
+
+  # Elasticsearch Configuration  
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    username: ${ELASTICSEARCH_USERNAME:elastic}
+    password: ${ELASTICSEARCH_PASSWORD:changeme}
+    connection-timeout: 5s
+    socket-timeout: 30s
+
+springdoc:
+  swagger-ui:
+    enabled: ${ecommerce-management.springdoc.swagger-ui.enabled}
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+
+openapi-servers-urls: ${ecommerce-management.openapi-servers-urls}
+
+app:
+  jwt:
+    access-token:
+      secret: ${JWT_ACCESS_TOKEN_SECRET:myAccessTokenSecretKeyThatShouldBeAtLeast256BitsLongForHS256Algorithm123456789}
+      expiration-minutes: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:60}
+    refresh-token:
+      secret: ${JWT_REFRESH_TOKEN_SECRET:myRefreshTokenSecretKeyThatShouldBeAtLeast256BitsLongForHS256Algorithm123456789}
+      expiration-days: ${JWT_REFRESH_TOKEN_EXPIRATION_DAYS:30}
+
+logging:
+  pattern:
+    console: "%red(%d{yyyy-MM-dd'T'HH:mm:ssXXX}) %magenta([%thread]) [${spring.application.name}, %X{traceId:-}, %X{spanId:-}] %highlight(%-5level) %logger{36}.%M - %msg%n"
