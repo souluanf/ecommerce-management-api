@@ -22,6 +22,6 @@ public class InvalidOrderStateException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 409; // CONFLICT
+        return 409;
     }
 }

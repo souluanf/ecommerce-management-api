@@ -5,22 +5,18 @@ import dev.luanfernandes.domain.dto.PageResponse;
 import dev.luanfernandes.domain.entity.OrderDomain;
 import dev.luanfernandes.domain.port.out.order.OrderRepository;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Slf4j
+@Component
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ListAllOrdersUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(ListAllOrdersUseCase.class);
-
     private final OrderRepository orderRepository;
-
-    public ListAllOrdersUseCase(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     public List<OrderDomain> execute() {
         log.info("ListAllOrders: Searching for all orders");

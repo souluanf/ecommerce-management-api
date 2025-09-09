@@ -32,14 +32,14 @@ public class UpdateStockUseCase {
                 ProductDomain product = productRepository
                         .findById(ProductId.of(item.productId()))
                         .orElseThrow(() -> {
-                            log.error("❌ StockUpdate: Product not found - ID: {}", item.productId());
+                            log.error("StockUpdate: Product not found - ID: {}", item.productId());
                             return new ProductNotFoundException(item.productId());
                         });
 
                 int previousStock = product.getStockQuantity();
 
                 log.info(
-                        "📦 StockUpdate: Confirmed stock deduction - product: '{}', previous: {}, deducted: {}",
+                        "StockUpdate: Confirmed stock deduction - product: '{}', previous: {}, deducted: {}",
                         product.getName(),
                         previousStock,
                         item.quantity());

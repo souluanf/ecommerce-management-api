@@ -1,11 +1,13 @@
 package dev.luanfernandes.domain.exception;
 
-/**
- * Exception thrown when trying to perform an operation on an order with invalid status.
- */
+import java.io.Serial;
+
 public class InvalidOrderStatusException extends BusinessException {
 
     private static final String ERROR_CODE = "INVALID_ORDER_STATUS";
+
+    @Serial
+    private static final long serialVersionUID = -5519827062408142522L;
 
     public InvalidOrderStatusException(String currentStatus, String expectedStatus) {
         super(String.format(
@@ -23,6 +25,6 @@ public class InvalidOrderStatusException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 409; // CONFLICT
+        return 409;
     }
 }

@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -27,26 +26,25 @@ public interface GetAllOrdersPort {
             tags = "Orders",
             summary = "Listar pedidos",
             description = "Retorna lista paginada de pedidos com filtros opcionais")
-    @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Lista paginada de pedidos retornada com sucesso",
-                content =
-                        @Content(
-                                mediaType = "application/json",
-                                schema = @Schema(implementation = PageResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Parâmetros inválidos"),
-        @ApiResponse(responseCode = "401", description = "Não autorizado"),
-        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    })
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista paginada de pedidos retornada com sucesso",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    @ApiResponse(responseCode = "401", description = "Não autorizado")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     @GetMapping(ORDERS)
     ResponseEntity<PageResponse<OrderResponse>> getAllOrders(
             @Parameter(description = "ID do usuário para filtrar pedidos") @RequestParam(required = false) UUID userId,
-            @Parameter(description = "Número da página (inicia em 0)") @RequestParam(defaultValue = "0")
-                    int page_number,
-            @Parameter(description = "Tamanho da página") @RequestParam(defaultValue = "10") int page_size,
-            @Parameter(description = "Data de início para filtro") @RequestParam(required = false) LocalDate start_date,
-            @Parameter(description = "Data de fim para filtro") @RequestParam(required = false) LocalDate end_date,
+            @Parameter(description = "Número da página (inicia em 0)")
+                    @RequestParam(value = "page_number", defaultValue = "0")
+                    int pageNumber,
+            @Parameter(description = "Tamanho da página") @RequestParam(value = "page_size", defaultValue = "10")
+                    int pageSize,
+            @Parameter(description = "Data de início para filtro") @RequestParam(value = "start_date", required = false)
+                    LocalDate startDate,
+            @Parameter(description = "Data de fim para filtro") @RequestParam(value = "end_date", required = false)
+                    LocalDate endDate,
             @Parameter(description = "Ordenação (ex: createdAt,desc ou totalAmount,asc)")
                     @RequestParam(required = false)
                     String sort);

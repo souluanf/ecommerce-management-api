@@ -34,9 +34,19 @@ public class OrderRepositoryAdapter implements OrderRepository {
 
     @Override
     public OrderDomain save(OrderDomain order) {
+        var existingEntity = jpaRepository.findById(order.getId().value()).orElse(null);
         var entity = mapper.toEntity(order);
-        var savedEntity = jpaRepository.save(entity);
-        return mapper.toDomain(savedEntity);
+
+        if (existingEntity != null) {
+            existingEntity.setStatus(entity.getStatus());
+            existingEntity.setTotalAmount(entity.getTotalAmount());
+            existingEntity.setUpdatedAt(java.time.LocalDateTime.now());
+            var savedEntity = jpaRepository.save(existingEntity);
+            return mapper.toDomain(savedEntity);
+        } else {
+            var savedEntity = jpaRepository.save(entity);
+            return mapper.toDomain(savedEntity);
+        }
     }
 
     @Override
@@ -139,7 +149,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
     }
 
     private Pageable createPageable(PageRequest pageRequest) {
-        Sort sort = Sort.unsorted();
+        Sort sort;
 
         if (pageRequest.hasSort()) {
             String[] sortParts = pageRequest.sort().split(",");

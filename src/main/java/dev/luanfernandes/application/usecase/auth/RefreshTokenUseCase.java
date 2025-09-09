@@ -14,11 +14,11 @@ import dev.luanfernandes.domain.valueobject.RefreshToken;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 public class RefreshTokenUseCase {
 
@@ -32,19 +32,15 @@ public class RefreshTokenUseCase {
 
         String refreshTokenStr = request.refreshToken();
 
-        // Validate refresh token
         if (!jwtTokenProvider.validateRefreshToken(refreshTokenStr)) {
             throw new InvalidTokenException("Invalid refresh token");
         }
 
-        // Extract email from refresh token
         String email = jwtTokenProviderAdapter.extractEmailFromRefreshToken(refreshTokenStr);
 
-        // Get user
         UserDomain user =
                 userRepository.findByEmail(new Email(email)).orElseThrow(() -> new UserNotFoundException(email));
 
-        // Generate new tokens
         JwtToken accessToken = jwtTokenProvider.generateAccessToken(
                 user.getEmail().value(), user.getRole().getAuthority());
         RefreshToken newRefreshToken =

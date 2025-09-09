@@ -5,7 +5,9 @@ import dev.luanfernandes.domain.valueobject.OrderId;
 import dev.luanfernandes.domain.valueobject.UserId;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class OrderDomain {
 
     private final OrderId id;
@@ -14,7 +16,7 @@ public class OrderDomain {
     private final Money totalAmount;
     private final OrderStatus status;
     private final LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private final LocalDateTime updatedAt;
 
     public OrderDomain(
             OrderId id,
@@ -34,34 +36,6 @@ public class OrderDomain {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = createdAt;
-    }
-
-    public OrderId getId() {
-        return id;
-    }
-
-    public UserId getUserId() {
-        return userId;
-    }
-
-    public List<OrderItemDomain> getItems() {
-        return items;
-    }
-
-    public Money getTotalAmount() {
-        return totalAmount;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public OrderDomain markAsPaid() {

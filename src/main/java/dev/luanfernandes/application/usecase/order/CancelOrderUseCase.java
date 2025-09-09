@@ -3,22 +3,18 @@ package dev.luanfernandes.application.usecase.order;
 import dev.luanfernandes.domain.exception.OrderNotFoundException;
 import dev.luanfernandes.domain.port.out.order.OrderRepository;
 import dev.luanfernandes.domain.valueobject.OrderId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Slf4j
+@Component
+@RequiredArgsConstructor
 @Transactional
 public class CancelOrderUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(CancelOrderUseCase.class);
-
     private final OrderRepository orderRepository;
-
-    public CancelOrderUseCase(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     public void cancel(OrderId orderId) {
         log.info("CancelOrder: Attempting to cancel order ID: {}", orderId.value());

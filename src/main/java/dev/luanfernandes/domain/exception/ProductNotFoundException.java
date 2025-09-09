@@ -1,11 +1,13 @@
 package dev.luanfernandes.domain.exception;
 
-/**
- * Exception thrown when a product is not found.
- */
+import java.io.Serial;
+
 public class ProductNotFoundException extends BusinessException {
 
     private static final String ERROR_CODE = "PRODUCT_NOT_FOUND";
+
+    @Serial
+    private static final long serialVersionUID = -393308434836741334L;
 
     public ProductNotFoundException(String productId) {
         super("Product not found with ID: " + productId);
@@ -18,6 +20,6 @@ public class ProductNotFoundException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 404; // NOT_FOUND
+        return 404;
     }
 }

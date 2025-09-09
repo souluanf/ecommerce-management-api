@@ -13,24 +13,19 @@ import dev.luanfernandes.domain.valueobject.OrderId;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Slf4j
+@Component
+@RequiredArgsConstructor
 @Transactional
 public class CreateOrderUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateOrderUseCase.class);
-
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-
-    public CreateOrderUseCase(OrderRepository orderRepository, ProductRepository productRepository) {
-        this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
-    }
 
     public OrderDomain execute(CreateOrderCommand command) {
         log.info(
@@ -39,7 +34,7 @@ public class CreateOrderUseCase {
                 command.items().size());
 
         List<OrderItemDomain> orderItems = new ArrayList<>();
-        List<ProductDomain> reservedProducts = new ArrayList<>(); // Para rollback se necessário
+        List<ProductDomain> reservedProducts = new ArrayList<>();
         Money totalAmount = Money.zero();
         boolean hasStockIssue = false;
         String stockIssueReason = "";

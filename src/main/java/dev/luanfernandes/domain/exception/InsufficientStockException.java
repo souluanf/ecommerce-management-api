@@ -1,11 +1,13 @@
 package dev.luanfernandes.domain.exception;
 
-/**
- * Exception thrown when trying to order more items than available in stock.
- */
+import java.io.Serial;
+
 public class InsufficientStockException extends BusinessException {
 
     private static final String ERROR_CODE = "INSUFFICIENT_STOCK";
+
+    @Serial
+    private static final long serialVersionUID = 8503277537971006476L;
 
     public InsufficientStockException(String productName, int available, int requested) {
         super(String.format(
@@ -24,6 +26,6 @@ public class InsufficientStockException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 409; // CONFLICT
+        return 409;
     }
 }

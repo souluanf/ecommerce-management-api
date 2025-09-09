@@ -1,5 +1,6 @@
 package dev.luanfernandes.infrastructure.config.web;
 
+import static dev.luanfernandes.infrastructure.constants.ExceptionHandlerAdviceConstants.ERROR_CODE_PROPERTY;
 import static dev.luanfernandes.infrastructure.constants.ExceptionHandlerAdviceConstants.STACKTRACE_PROPERTY;
 import static dev.luanfernandes.infrastructure.constants.ExceptionHandlerAdviceConstants.TIMESTAMP_PROPERTY;
 import static java.lang.String.format;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,7 +41,7 @@ public class ExceptionHandlerAdvice {
         HttpStatus status = HttpStatus.valueOf(exception.getHttpStatusCode());
         ProblemDetail problemDetail = forStatusAndDetail(status, exception.getMessage());
         problemDetail.setProperty(TIMESTAMP_PROPERTY, Instant.now());
-        problemDetail.setProperty("errorCode", exception.getErrorCode());
+        problemDetail.setProperty(ERROR_CODE_PROPERTY, exception.getErrorCode());
         return status(status).body(problemDetail);
     }
 
@@ -51,6 +53,14 @@ public class ExceptionHandlerAdvice {
                 .toList();
         problemDetail.setProperty(TIMESTAMP_PROPERTY, Instant.now());
         problemDetail.setProperty(STACKTRACE_PROPERTY, errors);
+        return problemDetail;
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+        ProblemDetail problemDetail = forStatusAndDetail(BAD_REQUEST, "Malformed JSON request");
+        problemDetail.setProperty(TIMESTAMP_PROPERTY, Instant.now());
+        problemDetail.setProperty("detail", exception.getMessage());
         return problemDetail;
     }
 
@@ -89,19 +99,17 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleUsernameNotFoundException(UsernameNotFoundException exception) {
-        // Por segurança, não expor detalhes específicos sobre usuários inexistentes
         ProblemDetail problemDetail =
                 exceptionToProblemDetailForStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
-        problemDetail.setProperty("errorCode", "INVALID_CREDENTIALS");
+        problemDetail.setProperty(ERROR_CODE_PROPERTY, "INVALID_CREDENTIALS");
         return status(HttpStatus.UNAUTHORIZED).body(problemDetail);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ProblemDetail> handleBadCredentialsException(BadCredentialsException exception) {
-        // Por segurança, não expor detalhes específicos sobre credenciais inválidas
         ProblemDetail problemDetail =
                 exceptionToProblemDetailForStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
-        problemDetail.setProperty("errorCode", "INVALID_CREDENTIALS");
+        problemDetail.setProperty(ERROR_CODE_PROPERTY, "INVALID_CREDENTIALS");
         return status(HttpStatus.UNAUTHORIZED).body(problemDetail);
     }
 
@@ -110,7 +118,7 @@ public class ExceptionHandlerAdvice {
         HttpStatus status = HttpStatus.valueOf(exception.getHttpStatusCode());
         ProblemDetail problemDetail = forStatusAndDetail(status, exception.getMessage());
         problemDetail.setProperty(TIMESTAMP_PROPERTY, Instant.now());
-        problemDetail.setProperty("errorCode", exception.getErrorCode());
+        problemDetail.setProperty(ERROR_CODE_PROPERTY, exception.getErrorCode());
         return status(status).body(problemDetail);
     }
 

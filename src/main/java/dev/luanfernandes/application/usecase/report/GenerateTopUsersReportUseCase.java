@@ -4,16 +4,17 @@ import dev.luanfernandes.domain.dto.query.TopUsersQuery;
 import dev.luanfernandes.domain.dto.result.TopUserReport;
 import dev.luanfernandes.domain.exception.InvalidParameterException;
 import dev.luanfernandes.domain.port.out.order.OrderRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GenerateTopUsersReportUseCase {
@@ -47,13 +48,11 @@ public class GenerateTopUsersReportUseCase {
     }
 
     private void validateDateRange(java.time.LocalDate startDate, java.time.LocalDate endDate) {
-        if (startDate != null && endDate != null) {
-            if (startDate.isAfter(endDate)) {
-                throw new InvalidParameterException("Start date must be before or equal to end date");
-            }
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            throw new InvalidParameterException("Start date must be before or equal to end date");
         }
 
-        java.time.LocalDate tomorrow = java.time.LocalDate.now().plusDays(1);
+        LocalDate tomorrow = java.time.LocalDate.now().plusDays(1);
         if (startDate != null && startDate.isAfter(tomorrow)) {
             throw new InvalidParameterException("Start date cannot be in the future");
         }

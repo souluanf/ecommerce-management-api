@@ -6,22 +6,18 @@ import dev.luanfernandes.domain.entity.OrderDomain;
 import dev.luanfernandes.domain.port.out.order.OrderRepository;
 import dev.luanfernandes.domain.valueobject.UserId;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Slf4j
+@Component
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FindOrdersByUserUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(FindOrdersByUserUseCase.class);
-
     private final OrderRepository orderRepository;
-
-    public FindOrdersByUserUseCase(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     public List<OrderDomain> execute(UserId userId) {
         log.info("FindOrdersByUser: Searching orders for user ID: {}", userId.value());

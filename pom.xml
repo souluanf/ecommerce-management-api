@@ -30,10 +30,18 @@
         <sonar.organization>souluanf</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.coverage.exclusions>
-            **/domain/**/*.java,
-            **/config/**/*.java,
-            **/constants/*.java,
-            **/Application.java
+            **/Application.java,
+            **/config/**,
+            **/constants/**,
+            **/dto/**,
+            **/adapter/out/persistence/entity/**,
+            **/adapter/out/messaging/event/**,
+            **/adapter/out/search/document/**,
+            **/generated/**,
+            **/*MapperImpl.java,
+            **/UserId.java,
+            **/ProductId.java,
+            **/OrderId.java
         </sonar.coverage.exclusions>
     </properties>
 
@@ -72,13 +80,11 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         
-        <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         
-        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -150,34 +156,29 @@
             <scope>test</scope>
         </dependency>
         
-        <!-- Spring Security Test -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
         
-        <!-- Spring Kafka Test -->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- Elasticsearch -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
         
-        <!-- TestContainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         
-        <!-- TestContainers Elasticsearch -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>elasticsearch</artifactId>
@@ -211,10 +212,18 @@
                 <version>${jacoco-plugin.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/config/**</exclude>
-                        <exclude>**/domain/**</exclude>
-                        <exclude>**/constants/**</exclude>
                         <exclude>**/Application.class</exclude>
+                        <exclude>**/config/**</exclude>
+                        <exclude>**/constants/**</exclude>
+                        <exclude>**/dto/**</exclude>
+                        <exclude>**/adapter/out/persistence/entity/**</exclude>
+                        <exclude>**/adapter/out/messaging/event/**</exclude>
+                        <exclude>**/adapter/out/search/document/**</exclude>
+                        <exclude>**/generated/**</exclude>
+                        <exclude>**/*MapperImpl.class</exclude>
+                        <exclude>**/UserId.class</exclude>
+                        <exclude>**/ProductId.class</exclude>
+                        <exclude>**/OrderId.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -292,6 +301,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>
+                        @{argLine}
                         -XX:+EnableDynamicAgentLoading
                         -Djdk.instrument.traceUsage=false
                     </argLine>

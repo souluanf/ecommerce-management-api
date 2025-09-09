@@ -1,7 +1,9 @@
 package dev.luanfernandes.domain.enums;
 
 import java.util.Set;
+import lombok.Getter;
 
+@Getter
 public enum UserRole {
     ADMIN("ROLE_ADMIN"),
     USER("ROLE_USER");
@@ -12,12 +14,8 @@ public enum UserRole {
         this.authority = authority;
     }
 
-    public String getAuthority() {
-        return authority;
-    }
-
     public String getRoleName() {
-        return authority.substring(5); // Remove "ROLE_" prefix
+        return authority.substring(5);
     }
 
     public static UserRole fromAuthority(String authority) {

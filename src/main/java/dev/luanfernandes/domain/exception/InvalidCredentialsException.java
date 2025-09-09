@@ -1,11 +1,13 @@
 package dev.luanfernandes.domain.exception;
 
-/**
- * Exception thrown when user provides invalid login credentials.
- */
+import java.io.Serial;
+
 public class InvalidCredentialsException extends BusinessException {
 
     private static final String ERROR_CODE = "INVALID_CREDENTIALS";
+
+    @Serial
+    private static final long serialVersionUID = -3672728830486993911L;
 
     public InvalidCredentialsException() {
         super("Invalid email or password");
@@ -22,6 +24,6 @@ public class InvalidCredentialsException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 401; // UNAUTHORIZED
+        return 401;
     }
 }

@@ -6,32 +6,23 @@ import dev.luanfernandes.domain.port.out.order.OrderRepository;
 import dev.luanfernandes.domain.port.out.product.ProductRepository;
 import dev.luanfernandes.domain.port.out.search.ProductSearchRepository;
 import dev.luanfernandes.domain.valueobject.ProductId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class DeleteProductUseCase {
-
-    private static final Logger log = LoggerFactory.getLogger(DeleteProductUseCase.class);
 
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final ProductSearchRepository productSearchRepository;
 
-    public DeleteProductUseCase(
-            ProductRepository productRepository,
-            OrderRepository orderRepository,
-            ProductSearchRepository productSearchRepository) {
-        this.productRepository = productRepository;
-        this.orderRepository = orderRepository;
-        this.productSearchRepository = productSearchRepository;
-    }
-
     public void delete(ProductId productId) {
-        log.info("🗑️ DeleteProduct: Attempting to delete product ID: {}", productId.value());
+        log.info("DeleteProduct: Attempting to delete product ID: {}", productId.value());
 
         if (!productRepository.existsById(productId)) {
             log.warn("DeleteProduct: Product not found - ID: {}", productId.value());
@@ -39,7 +30,7 @@ public class DeleteProductUseCase {
         }
 
         if (orderRepository.existsByProductId(productId)) {
-            log.warn("⚠️ DeleteProduct: Cannot delete product associated with orders - ID: {}", productId.value());
+            log.warn("DeleteProduct: Cannot delete product associated with orders - ID: {}", productId.value());
             throw new ProductInUseException(productId.value());
         }
 
@@ -51,7 +42,7 @@ public class DeleteProductUseCase {
         if (productToDelete.isPresent()) {
             try {
                 productSearchRepository.delete(productToDelete.get());
-                log.info("🔍 DeleteProduct: Product removed from search index - ID: {}", productId.value());
+                log.info("DeleteProduct: Product removed from search index - ID: {}", productId.value());
             } catch (Exception e) {
                 log.warn(
                         "DeleteProduct: Failed to remove product from search index - ID: {}, error: {}",

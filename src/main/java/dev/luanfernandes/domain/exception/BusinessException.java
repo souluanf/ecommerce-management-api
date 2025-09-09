@@ -18,6 +18,6 @@ public abstract class BusinessException extends RuntimeException {
     public abstract String getErrorCode();
 
     public int getHttpStatusCode() {
-        return 400; // BAD_REQUEST
+        return 400;
     }
 }

@@ -1,11 +1,13 @@
 package dev.luanfernandes.domain.exception;
 
-/**
- * Exception thrown when attempting to create a user with an email that already exists.
- */
+import java.io.Serial;
+
 public class UserAlreadyExistsException extends BusinessException {
 
     private static final String ERROR_CODE = "USER_ALREADY_EXISTS";
+
+    @Serial
+    private static final long serialVersionUID = -4227606701914326086L;
 
     public UserAlreadyExistsException(String email) {
         super("User already exists with email: " + email);
@@ -18,6 +20,6 @@ public class UserAlreadyExistsException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 409; // CONFLICT
+        return 409;
     }
 }

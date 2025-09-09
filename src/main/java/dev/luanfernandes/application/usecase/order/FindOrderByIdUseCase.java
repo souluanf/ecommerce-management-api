@@ -4,22 +4,18 @@ import dev.luanfernandes.domain.entity.OrderDomain;
 import dev.luanfernandes.domain.port.out.order.OrderRepository;
 import dev.luanfernandes.domain.valueobject.OrderId;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Slf4j
+@Component
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FindOrderByIdUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(FindOrderByIdUseCase.class);
-
     private final OrderRepository orderRepository;
-
-    public FindOrderByIdUseCase(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     public Optional<OrderDomain> execute(OrderId orderId) {
         log.info("FindOrderById: Searching for order with ID: {}", orderId.value());

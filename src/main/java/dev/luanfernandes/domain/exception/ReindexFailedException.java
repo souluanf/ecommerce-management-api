@@ -22,6 +22,6 @@ public class ReindexFailedException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 500; // INTERNAL_SERVER_ERROR
+        return 500;
     }
 }

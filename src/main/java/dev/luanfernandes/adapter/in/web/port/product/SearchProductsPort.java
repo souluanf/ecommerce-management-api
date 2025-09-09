@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.math.BigDecimal;
 import org.springframework.http.ResponseEntity;
@@ -26,18 +25,13 @@ public interface SearchProductsPort {
             tags = "Products",
             summary = "Search products - Elasticsearch",
             description = "Search for products using Elasticsearch with fuzzy matching")
-    @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Search results returned successfully",
-                content =
-                        @Content(
-                                mediaType = "application/json",
-                                schema = @Schema(implementation = SearchResult.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid search parameters"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
+    @ApiResponse(
+            responseCode = "200",
+            description = "Search results returned successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SearchResult.class)))
+    @ApiResponse(responseCode = "400", description = "Invalid search parameters")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     ResponseEntity<SearchResult> searchProducts(
             @Parameter(description = "Search query") @RequestParam(required = false) String q,
             @Parameter(description = "Product category") @RequestParam(required = false) String category,

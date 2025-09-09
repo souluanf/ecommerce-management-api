@@ -3,7 +3,9 @@ package dev.luanfernandes.domain.entity;
 import dev.luanfernandes.domain.valueobject.Money;
 import dev.luanfernandes.domain.valueobject.ProductId;
 import java.time.LocalDateTime;
+import lombok.Getter;
 
+@Getter
 public class ProductDomain {
 
     private final ProductId id;
@@ -41,38 +43,6 @@ public class ProductDomain {
         this.stockQuantity = stockQuantity;
         this.createdAt = createdAt;
         this.updatedAt = createdAt;
-    }
-
-    public ProductId getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Money getPrice() {
-        return price;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public int getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public void updateTimestamp() {

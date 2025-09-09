@@ -28,7 +28,6 @@ public class StockUpdateConsumer {
     private final UpdateStockUseCase updateStockUseCase;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    // Para garantir idempotência - armazenar eventos já processados
     private final Set<String> processedEvents = ConcurrentHashMap.newKeySet();
 
     public StockUpdateConsumer(UpdateStockUseCase updateStockUseCase, KafkaTemplate<String, Object> kafkaTemplate) {
@@ -45,73 +44,66 @@ public class StockUpdateConsumer {
             Acknowledgment acknowledgment) {
 
         log.info(
-                "📨 Kafka: Received order paid event - eventId: {}, orderId: {}, topic: {}, partition: {}, offset: {}",
+                "Kafka: Received order paid event - eventId: {}, orderId: {}, topic: {}, partition: {}, offset: {}",
                 event.eventId(),
                 event.orderId(),
                 topic,
                 partition,
                 offset);
 
-        // Verificar idempotência
         if (processedEvents.contains(event.eventId())) {
-            log.warn("⚠️ Kafka: Duplicate event ignored - eventId: {}, orderId: {}", event.eventId(), event.orderId());
+            log.warn("Kafka: Duplicate event ignored - eventId: {}, orderId: {}", event.eventId(), event.orderId());
             acknowledgment.acknowledge();
             return;
         }
 
         try {
-            // Processar atualização de estoque
             List<StockUpdateEvent> updates = updateStockUseCase.updateStockFromOrder(event.orderId(), event.items());
 
-            // Publicar evento de confirmação
             StockUpdatedEvent stockUpdatedEvent = StockUpdatedEvent.success(event.orderId(), updates);
             kafkaTemplate.send(STOCK_UPDATED_TOPIC, event.orderId(), stockUpdatedEvent);
 
-            // Marcar como processado (idempotência)
             processedEvents.add(event.eventId());
 
             log.info(
-                    "✅ Kafka: Stock updated successfully - eventId: {}, orderId: {}, updates: {}",
+                    "Kafka: Stock updated successfully - eventId: {}, orderId: {}, updates: {}",
                     event.eventId(),
                     event.orderId(),
                     updates.size());
 
-            // Confirmar processamento
             acknowledgment.acknowledge();
 
         } catch (Exception e) {
             log.error(
-                    "❌ Kafka: Failed to process order paid event - eventId: {}, orderId: {}, error: {}",
+                    "Kafka: Failed to process order paid event - eventId: {}, orderId: {}, error: {}",
                     event.eventId(),
                     event.orderId(),
                     e.getMessage(),
                     e);
 
-            // Enviar para Dead Letter Queue
-            sendToDeadLetterQueue(event, e.getMessage(), 1);
+            sendToDeadLetterQueue(event, e.getMessage());
 
-            // Ainda assim fazer acknowledge para não reprocessar indefinidamente
             acknowledgment.acknowledge();
         }
     }
 
-    private void sendToDeadLetterQueue(OrderPaidEvent originalEvent, String error, int retryCount) {
+    private void sendToDeadLetterQueue(OrderPaidEvent originalEvent, String error) {
         try {
             OrderFailedEvent failedEvent =
-                    OrderFailedEvent.create(originalEvent.eventId(), originalEvent.orderId(), error, retryCount);
+                    OrderFailedEvent.create(originalEvent.eventId(), originalEvent.orderId(), error, 1);
 
             kafkaTemplate.send(ORDER_FAILED_DLQ_TOPIC, originalEvent.orderId(), failedEvent);
 
             log.error(
-                    "💀 Kafka: Event sent to DLQ - eventId: {}, orderId: {}, error: {}, retryCount: {}",
+                    "Kafka: Event sent to DLQ - eventId: {}, orderId: {}, error: {}, retryCount: {}",
                     originalEvent.eventId(),
                     originalEvent.orderId(),
                     error,
-                    retryCount);
+                    1);
 
         } catch (Exception dlqError) {
             log.error(
-                    "💀 Kafka: Failed to send event to DLQ - eventId: {}, orderId: {}, dlqError: {}",
+                    "Kafka: Failed to send event to DLQ - eventId: {}, orderId: {}, dlqError: {}",
                     originalEvent.eventId(),
                     originalEvent.orderId(),
                     dlqError.getMessage(),
@@ -123,18 +115,11 @@ public class StockUpdateConsumer {
     public void handleDeadLetterQueue(@Payload OrderFailedEvent event, Acknowledgment acknowledgment) {
 
         log.error(
-                "💀 DLQ: Processing failed event - eventId: {}, orderId: {}, error: '{}', retryCount: {}",
+                "DLQ: Processing failed event - eventId: {}, orderId: {}, error: '{}', retryCount: {}",
                 event.eventId(),
                 event.orderId(),
                 event.error(),
                 event.retryCount());
-
-        // Aqui poderia implementar:
-        // 1. Notificação para equipe de suporte
-        // 2. Dashboard de monitoramento
-        // 3. Tentativa manual de reprocessamento
-        // 4. Armazenamento em banco para análise
-
         acknowledgment.acknowledge();
     }
 }

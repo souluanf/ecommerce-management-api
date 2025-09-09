@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GenerateUserTicketAverageReportUseCase {
@@ -41,10 +41,8 @@ public class GenerateUserTicketAverageReportUseCase {
     }
 
     private void validateDateRange(java.time.LocalDate startDate, java.time.LocalDate endDate) {
-        if (startDate != null && endDate != null) {
-            if (startDate.isAfter(endDate)) {
-                throw new InvalidParameterException("Start date must be before or equal to end date");
-            }
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            throw new InvalidParameterException("Start date must be before or equal to end date");
         }
 
         java.time.LocalDate tomorrow = java.time.LocalDate.now().plusDays(1);

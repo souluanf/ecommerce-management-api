@@ -25,6 +25,6 @@ public class OrderNotFoundException extends BusinessException {
 
     @Override
     public int getHttpStatusCode() {
-        return 404; // NOT_FOUND
+        return 404;
     }
 }

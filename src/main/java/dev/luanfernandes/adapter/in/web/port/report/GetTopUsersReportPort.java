@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -31,18 +30,17 @@ public interface GetTopUsersReportPort {
             summary = "Top 5 usuários que mais compraram",
             description =
                     "Retorna os usuários com maior volume de compras ordenados por valor total gasto. Considera apenas pedidos pagos (PAID).")
-    @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Lista dos top usuários retornada com sucesso",
-                content =
-                        @Content(
-                                mediaType = "application/json",
-                                schema = @Schema(implementation = TopUserReportResponse.class),
-                                examples =
-                                        @ExampleObject(
-                                                value =
-                                                        """
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista dos top usuários retornada com sucesso",
+            content =
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TopUserReportResponse.class),
+                            examples =
+                                    @ExampleObject(
+                                            value =
+                                                    """
                                 [
                                   {
                                     "userId": "33333333-3333-3333-3333-333333333333",
@@ -57,12 +55,11 @@ public interface GetTopUsersReportPort {
                                     "orderCount": 7
                                   }
                                 ]
-                                """))),
-        @ApiResponse(responseCode = "400", description = "Parâmetros inválidos"),
-        @ApiResponse(responseCode = "401", description = "Não autorizado"),
-        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN"),
-        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    })
+                                """)))
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    @ApiResponse(responseCode = "401", description = "Não autorizado")
+    @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     @GetMapping(REPORTS_TOP_USERS)
     ResponseEntity<List<TopUserReportResponse>> getTopUsers(
             @Parameter(description = "Data inicial para filtro (formato: YYYY-MM-DD)", example = "2025-01-01")

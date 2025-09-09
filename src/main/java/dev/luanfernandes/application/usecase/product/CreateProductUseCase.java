@@ -6,24 +6,19 @@ import dev.luanfernandes.domain.port.out.product.ProductRepository;
 import dev.luanfernandes.domain.port.out.search.ProductSearchRepository;
 import dev.luanfernandes.domain.valueobject.ProductId;
 import java.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Slf4j
+@Component
 @Transactional
+@RequiredArgsConstructor
 public class CreateProductUseCase {
-
-    private static final Logger log = LoggerFactory.getLogger(CreateProductUseCase.class);
 
     private final ProductRepository productRepository;
     private final ProductSearchRepository productSearchRepository;
-
-    public CreateProductUseCase(ProductRepository productRepository, ProductSearchRepository productSearchRepository) {
-        this.productRepository = productRepository;
-        this.productSearchRepository = productSearchRepository;
-    }
 
     public ProductDomain create(CreateProductCommand command) {
         log.info(

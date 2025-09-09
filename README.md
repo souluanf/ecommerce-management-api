@@ -2,6 +2,18 @@
 
 Sistema de gerenciamento de pedidos e produtos para e-commerce desenvolvido com Spring Boot, seguindo princípios de Clean Architecture e padrões de desenvolvimento empresarial.
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=coverage)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=bugs)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=souluanf_ecommerce-management-api)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=souluanf_ecommerce-management-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=souluanf_golden-raspberry-awards-api)
+
 ## Sumário
 
 - [Funcionalidades](#funcionalidades)

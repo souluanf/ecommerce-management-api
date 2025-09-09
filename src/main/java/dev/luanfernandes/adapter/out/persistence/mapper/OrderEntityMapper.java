@@ -32,7 +32,7 @@ public class OrderEntityMapper {
         OrderJpaEntity entity = new OrderJpaEntity(
                 domain.getId().value(),
                 domain.getUserId().value(),
-                null, // items will be set separately
+                null,
                 domain.getTotalAmount().value(),
                 mapStatus(domain.getStatus()),
                 domain.getCreatedAt());
@@ -54,7 +54,7 @@ public class OrderEntityMapper {
 
     private OrderItemJpaEntity toEntity(OrderItemDomain domain, OrderJpaEntity orderEntity) {
         var entity = new OrderItemJpaEntity(
-                orderEntity,
+                orderEntity.getId(),
                 domain.getProductId().value(),
                 domain.getProductName(),
                 domain.getUnitPrice().value(),

@@ -6,24 +6,19 @@ import dev.luanfernandes.domain.exception.OrderNotFoundException;
 import dev.luanfernandes.domain.port.out.order.OrderEventPublisher;
 import dev.luanfernandes.domain.port.out.order.OrderRepository;
 import dev.luanfernandes.domain.valueobject.OrderId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Slf4j
+@Component
+@RequiredArgsConstructor
 @Transactional
 public class PayOrderUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(PayOrderUseCase.class);
-
     private final OrderRepository orderRepository;
     private final OrderEventPublisher orderEventPublisher;
-
-    public PayOrderUseCase(OrderRepository orderRepository, OrderEventPublisher orderEventPublisher) {
-        this.orderRepository = orderRepository;
-        this.orderEventPublisher = orderEventPublisher;
-    }
 
     public OrderDomain execute(OrderId orderId) {
         log.info("PayOrder: Processing payment for order ID: {}", orderId.value());

@@ -1,5 +1,9 @@
 package dev.luanfernandes.infrastructure.config.security;
 
+import static dev.luanfernandes.domain.enums.UserRole.ADMIN;
+import static dev.luanfernandes.domain.enums.UserRole.USER;
+import static dev.luanfernandes.infrastructure.constants.PathConstants.*;
+
 import dev.luanfernandes.adapter.out.security.CustomUserDetailsService;
 import dev.luanfernandes.adapter.out.security.JwtAuthenticationFilter;
 import dev.luanfernandes.domain.port.out.auth.UserRepository;
@@ -43,10 +47,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - No authentication required
-                        .requestMatchers(
-                                "/api/v1/auth/**",
+                .authorizeHttpRequests(auth -> auth.requestMatchers(
+                                AUTH_WILDCARD,
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
@@ -57,32 +59,22 @@ public class SecurityConfig {
                                 "/swagger",
                                 "/swagger-ui")
                         .permitAll()
-
-                        // Product endpoints - USER and ADMIN access
-                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**")
-                        .hasAnyRole("USER", "ADMIN")
-
-                        // Product management - ADMIN only
-                        .requestMatchers(HttpMethod.POST, "/api/v1/products")
-                        .hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**")
-                        .hasRole("ADMIN")
-
-                        // Orders - USER and ADMIN access
-                        .requestMatchers(HttpMethod.GET, "/api/v1/orders/**")
-                        .hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/orders")
-                        .hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/orders/*/pay")
-                        .hasAnyRole("USER", "ADMIN")
-
-                        // Reports - ADMIN only
-                        .requestMatchers("/api/v1/reports/**")
-                        .hasRole("ADMIN")
-
-                        // All other requests require authentication
+                        .requestMatchers(HttpMethod.GET, PRODUCTS_WILDCARD)
+                        .hasAnyRole(USER.name(), ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, PRODUCTS)
+                        .hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, PRODUCTS_WILDCARD)
+                        .hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, PRODUCTS_WILDCARD)
+                        .hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, ORDERS_WILDCARD)
+                        .hasAnyRole(USER.name(), ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, ORDERS)
+                        .hasAnyRole(USER.name(), ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, ORDERS + "/*/pay")
+                        .hasAnyRole(USER.name(), ADMIN.name())
+                        .requestMatchers(REPORTS_WILDCARD)
+                        .hasRole(ADMIN.name())
                         .anyRequest()
                         .authenticated())
                 .build();

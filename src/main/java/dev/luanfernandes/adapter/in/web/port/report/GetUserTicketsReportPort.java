@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,18 +27,17 @@ public interface GetUserTicketsReportPort {
             tags = "Reports",
             summary = "Ticket médio por usuário",
             description = "Retorna o valor médio dos pedidos por usuário. Considera apenas pedidos pagos (PAID).")
-    @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Lista do ticket médio por usuário retornada com sucesso",
-                content =
-                        @Content(
-                                mediaType = "application/json",
-                                schema = @Schema(implementation = UserTicketReportResponse.class),
-                                examples =
-                                        @ExampleObject(
-                                                value =
-                                                        """
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista do ticket médio por usuário retornada com sucesso",
+            content =
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserTicketReportResponse.class),
+                            examples =
+                                    @ExampleObject(
+                                            value =
+                                                    """
                                 [
                                   {
                                     "userId": "33333333-3333-3333-3333-333333333333",
@@ -52,12 +50,11 @@ public interface GetUserTicketsReportPort {
                                     "averageTicket": 599.99
                                   }
                                 ]
-                                """))),
-        @ApiResponse(responseCode = "400", description = "Parâmetros inválidos"),
-        @ApiResponse(responseCode = "401", description = "Não autorizado"),
-        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN"),
-        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    })
+                                """)))
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    @ApiResponse(responseCode = "401", description = "Não autorizado")
+    @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     @GetMapping(REPORTS_USER_TICKETS)
     ResponseEntity<List<UserTicketReportResponse>> getUserTickets(
             @Parameter(description = "Data inicial para filtro (formato: YYYY-MM-DD)", example = "2025-01-01")

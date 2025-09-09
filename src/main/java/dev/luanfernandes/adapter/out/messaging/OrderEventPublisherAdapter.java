@@ -3,6 +3,7 @@ package dev.luanfernandes.adapter.out.messaging;
 import dev.luanfernandes.adapter.out.messaging.event.OrderItemEvent;
 import dev.luanfernandes.adapter.out.messaging.event.OrderPaidEvent;
 import dev.luanfernandes.domain.entity.OrderDomain;
+import dev.luanfernandes.domain.exception.EventPublicationException;
 import dev.luanfernandes.domain.port.out.order.OrderEventPublisher;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
@@ -27,39 +28,41 @@ public class OrderEventPublisherAdapter implements OrderEventPublisher {
     public void publishOrderPaid(OrderDomain order) {
         try {
             OrderPaidEvent event = createOrderPaidEvent(order);
+            String orderId = order.getId().value();
 
-            log.info(
-                    "📨 Kafka: Publishing order paid event - orderId: {}, eventId: {}",
-                    order.getId().value(),
-                    event.eventId());
+            log.info("Kafka: Publishing order paid event - orderId: {}, eventId: {}", orderId, event.eventId());
 
-            CompletableFuture<SendResult<String, Object>> future =
-                    kafkaTemplate.send(ORDER_PAID_TOPIC, order.getId().value(), event);
+            CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(ORDER_PAID_TOPIC, orderId, event);
 
             future.whenComplete((result, throwable) -> {
                 if (throwable != null) {
                     log.error(
-                            "❌ Kafka: Failed to publish order paid event - orderId: {}, eventId: {}, error: {}",
-                            order.getId().value(),
+                            "Kafka: Failed to publish order paid event - orderId: {}, eventId: {}, error: {}",
+                            orderId,
                             event.eventId(),
                             throwable.getMessage(),
                             throwable);
                 } else {
                     log.info(
-                            "✅ Kafka: Order paid event published successfully - orderId: {}, eventId: {}, offset: {}",
-                            order.getId().value(),
+                            "Kafka: Order paid event published successfully - orderId: {}, eventId: {}, offset: {}",
+                            orderId,
                             event.eventId(),
                             result.getRecordMetadata().offset());
                 }
             });
 
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new EventPublicationException("OrderPaid", orderId, e.getMessage(), e);
+            } catch (Exception e) {
+                throw new EventPublicationException("OrderPaid", orderId, e.getMessage(), e);
+            }
+
         } catch (Exception e) {
-            log.error(
-                    "❌ Kafka: Error creating order paid event - orderId: {}, error: {}",
-                    order.getId().value(),
-                    e.getMessage(),
-                    e);
-            throw new RuntimeException("Failed to publish order paid event", e);
+            String orderId = order.getId() != null ? order.getId().value() : "unknown";
+            throw new EventPublicationException("OrderPaid", orderId, e.getMessage(), e);
         }
     }
 

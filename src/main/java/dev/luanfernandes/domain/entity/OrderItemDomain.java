@@ -2,7 +2,9 @@ package dev.luanfernandes.domain.entity;
 
 import dev.luanfernandes.domain.valueobject.Money;
 import dev.luanfernandes.domain.valueobject.ProductId;
+import lombok.Getter;
 
+@Getter
 public class OrderItemDomain {
 
     private final ProductId productId;
@@ -21,25 +23,5 @@ public class OrderItemDomain {
         this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.subtotal = unitPrice.multiply(quantity);
-    }
-
-    public ProductId getProductId() {
-        return productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public Money getUnitPrice() {
-        return unitPrice;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public Money getSubtotal() {
-        return subtotal;
     }
 }

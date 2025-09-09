@@ -1,12 +1,22 @@
 package dev.luanfernandes.adapter.out.search.repository;
 
+import static java.lang.Double.MAX_VALUE;
+import static java.math.BigDecimal.ZERO;
+import static java.math.BigDecimal.valueOf;
+
 import dev.luanfernandes.adapter.out.search.document.ProductDocument;
+import dev.luanfernandes.domain.dto.ProductSearchResult;
 import dev.luanfernandes.domain.entity.ProductDomain;
+import dev.luanfernandes.domain.exception.SearchException;
 import dev.luanfernandes.domain.port.out.search.ProductSearchRepository;
+import dev.luanfernandes.domain.valueobject.Money;
+import dev.luanfernandes.domain.valueobject.ProductId;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -20,7 +30,7 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
 
     @Override
     @Retryable(
-            value = {Exception.class},
+            retryFor = {Exception.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000))
     public void index(ProductDomain product) {
@@ -48,13 +58,13 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
                     product.getId().value(),
                     e.getMessage(),
                     e);
-            throw e;
+            throw new SearchException("index", product.getId().value(), e.getMessage(), e);
         }
     }
 
     @Override
     @Retryable(
-            value = {Exception.class},
+            retryFor = {Exception.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000))
     public void delete(ProductDomain product) {
@@ -68,23 +78,23 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
                     product.getId().value(),
                     e.getMessage(),
                     e);
-            throw e;
+            throw new SearchException("delete", product.getId().value(), e.getMessage(), e);
         }
     }
 
     @Override
-    public dev.luanfernandes.domain.dto.ProductSearchResult search(SearchCriteria criteria) {
+    public ProductSearchResult search(SearchCriteria criteria) {
         try {
             long startTime = System.currentTimeMillis();
 
-            org.springframework.data.domain.Page<ProductDocument> page = performDirectSearch(criteria);
+            Page<ProductDocument> page = performDirectSearch(criteria);
 
             List<ProductDomain> results =
                     page.getContent().stream().map(this::convertToDomain).toList();
 
             long executionTime = System.currentTimeMillis() - startTime;
             log.info(
-                    "🔍 ES: Domain search completed - query: '{}', category: '{}', priceRange: {}-{}, results: {}, time: {}ms",
+                    "ES: Domain search completed - query: '{}', category: '{}', priceRange: {}-{}, results: {}, time: {}ms",
                     criteria.name(),
                     criteria.category(),
                     criteria.minPrice(),
@@ -92,21 +102,16 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
                     results.size(),
                     executionTime);
 
-            if (executionTime > 300) {
-                log.warn("ES: Slow domain search detected - query: '{}', time: {}ms", criteria.name(), executionTime);
-            }
-
-            return dev.luanfernandes.domain.dto.ProductSearchResult.of(
+            return ProductSearchResult.of(
                     results, page.getTotalElements(), page.getTotalPages(), page.getNumber(), page.getSize());
         } catch (Exception e) {
             log.error("ES: Domain search failed - query: '{}', error: {}", criteria.name(), e.getMessage(), e);
-            return dev.luanfernandes.domain.dto.ProductSearchResult.empty();
+            return ProductSearchResult.empty();
         }
     }
 
-    private org.springframework.data.domain.Page<ProductDocument> performDirectSearch(SearchCriteria criteria) {
-        org.springframework.data.domain.PageRequest pageRequest =
-                org.springframework.data.domain.PageRequest.of(criteria.page(), criteria.size());
+    private Page<ProductDocument> performDirectSearch(SearchCriteria criteria) {
+        PageRequest pageRequest = PageRequest.of(criteria.page(), criteria.size());
 
         boolean hasQuery = criteria.name() != null && !criteria.name().trim().isEmpty();
         boolean hasCategory =
@@ -120,20 +125,12 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
         return searchWithQuery(criteria, hasCategory, hasPriceRange, pageRequest);
     }
 
-    private org.springframework.data.domain.Page<ProductDocument> searchWithoutQuery(
-            SearchCriteria criteria,
-            boolean hasCategory,
-            boolean hasPriceRange,
-            org.springframework.data.domain.PageRequest pageRequest) {
+    private Page<ProductDocument> searchWithoutQuery(
+            SearchCriteria criteria, boolean hasCategory, boolean hasPriceRange, PageRequest pageRequest) {
 
         if (hasCategory && hasPriceRange) {
-            BigDecimal minPrice =
-                    criteria.minPrice() != null ? BigDecimal.valueOf(criteria.minPrice()) : BigDecimal.ZERO;
-            BigDecimal maxPrice = criteria.maxPrice() != null
-                    ? BigDecimal.valueOf(criteria.maxPrice())
-                    : BigDecimal.valueOf(Double.MAX_VALUE);
             return elasticsearchRepository.findByCategoryAndPriceBetweenAndAvailableTrue(
-                    criteria.category(), minPrice, maxPrice, pageRequest);
+                    criteria.category(), getMinPrice(criteria), getMaxPrice(criteria), pageRequest);
         }
 
         if (hasCategory) {
@@ -141,31 +138,19 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
         }
 
         if (hasPriceRange) {
-            BigDecimal minPrice =
-                    criteria.minPrice() != null ? BigDecimal.valueOf(criteria.minPrice()) : BigDecimal.ZERO;
-            BigDecimal maxPrice = criteria.maxPrice() != null
-                    ? BigDecimal.valueOf(criteria.maxPrice())
-                    : BigDecimal.valueOf(Double.MAX_VALUE);
-            return elasticsearchRepository.findByPriceBetweenAndAvailableTrue(minPrice, maxPrice, pageRequest);
+            return elasticsearchRepository.findByPriceBetweenAndAvailableTrue(
+                    getMinPrice(criteria), getMaxPrice(criteria), pageRequest);
         }
 
         return elasticsearchRepository.findByAvailableTrue(pageRequest);
     }
 
-    private org.springframework.data.domain.Page<ProductDocument> searchWithQuery(
-            SearchCriteria criteria,
-            boolean hasCategory,
-            boolean hasPriceRange,
-            org.springframework.data.domain.PageRequest pageRequest) {
+    private Page<ProductDocument> searchWithQuery(
+            SearchCriteria criteria, boolean hasCategory, boolean hasPriceRange, PageRequest pageRequest) {
 
         if (hasCategory && hasPriceRange) {
-            BigDecimal minPrice =
-                    criteria.minPrice() != null ? BigDecimal.valueOf(criteria.minPrice()) : BigDecimal.ZERO;
-            BigDecimal maxPrice = criteria.maxPrice() != null
-                    ? BigDecimal.valueOf(criteria.maxPrice())
-                    : BigDecimal.valueOf(Double.MAX_VALUE);
             return elasticsearchRepository.findByQueryAndCategoryAndPriceRangeAndAvailableTrue(
-                    criteria.name(), criteria.category(), minPrice, maxPrice, pageRequest);
+                    criteria.name(), criteria.category(), getMinPrice(criteria), getMaxPrice(criteria), pageRequest);
         }
 
         if (hasCategory) {
@@ -174,13 +159,8 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
         }
 
         if (hasPriceRange) {
-            BigDecimal minPrice =
-                    criteria.minPrice() != null ? BigDecimal.valueOf(criteria.minPrice()) : BigDecimal.ZERO;
-            BigDecimal maxPrice = criteria.maxPrice() != null
-                    ? BigDecimal.valueOf(criteria.maxPrice())
-                    : BigDecimal.valueOf(Double.MAX_VALUE);
             return elasticsearchRepository.findByQueryAndPriceRangeAndAvailableTrue(
-                    criteria.name(), minPrice, maxPrice, pageRequest);
+                    criteria.name(), getMinPrice(criteria), getMaxPrice(criteria), pageRequest);
         }
 
         return elasticsearchRepository.findByQueryAndAvailableTrue(criteria.name(), pageRequest);
@@ -188,12 +168,20 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
 
     private ProductDomain convertToDomain(ProductDocument document) {
         return new ProductDomain(
-                new dev.luanfernandes.domain.valueobject.ProductId(document.id()),
+                new ProductId(document.id()),
                 document.name(),
                 document.description(),
-                new dev.luanfernandes.domain.valueobject.Money(document.price()),
+                new Money(document.price()),
                 document.category(),
                 document.stockQuantity(),
                 document.createdAt());
+    }
+
+    private BigDecimal getMinPrice(SearchCriteria criteria) {
+        return criteria.minPrice() != null ? valueOf(criteria.minPrice()) : ZERO;
+    }
+
+    private BigDecimal getMaxPrice(SearchCriteria criteria) {
+        return criteria.maxPrice() != null ? valueOf(criteria.maxPrice()) : valueOf(MAX_VALUE);
     }
 }

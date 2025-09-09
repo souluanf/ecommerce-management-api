@@ -15,9 +15,8 @@ public class OrderItemJpaEntity {
     @Column(columnDefinition = "VARCHAR(36)")
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    private OrderJpaEntity order;
+    @Column(name = "order_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String orderId;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(36)")
     private String productId;
@@ -37,13 +36,13 @@ public class OrderItemJpaEntity {
     public OrderItemJpaEntity() {}
 
     public OrderItemJpaEntity(
-            OrderJpaEntity order,
+            String orderId,
             String productId,
             String productName,
             BigDecimal unitPrice,
             Integer quantity,
             BigDecimal subtotal) {
-        this.order = order;
+        this.orderId = orderId;
         this.productId = productId;
         this.productName = productName;
         this.unitPrice = unitPrice;

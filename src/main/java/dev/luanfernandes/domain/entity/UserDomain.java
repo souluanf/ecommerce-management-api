@@ -4,7 +4,9 @@ import dev.luanfernandes.domain.enums.UserRole;
 import dev.luanfernandes.domain.valueobject.Email;
 import dev.luanfernandes.domain.valueobject.UserId;
 import java.time.LocalDateTime;
+import lombok.Getter;
 
+@Getter
 public class UserDomain {
 
     private final UserId id;
@@ -21,30 +23,6 @@ public class UserDomain {
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = createdAt;
-    }
-
-    public UserId getId() {
-        return id;
-    }
-
-    public Email getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public void updateTimestamp() {

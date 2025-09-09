@@ -5,20 +5,16 @@ import dev.luanfernandes.domain.dto.PageResponse;
 import dev.luanfernandes.domain.entity.ProductDomain;
 import dev.luanfernandes.domain.port.out.product.ProductRepository;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-@Service
+@Slf4j
+@Component
+@RequiredArgsConstructor
 public class ListAllProductsUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(ListAllProductsUseCase.class);
-
     private final ProductRepository productRepository;
-
-    public ListAllProductsUseCase(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     public List<ProductDomain> execute() {
         log.info("ListAllProducts: Searching for all products");

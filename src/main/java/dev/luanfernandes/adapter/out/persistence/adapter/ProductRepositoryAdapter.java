@@ -68,7 +68,7 @@ public class ProductRepositoryAdapter implements ProductRepository {
     }
 
     private Pageable createPageable(PageRequest pageRequest) {
-        Sort sort = Sort.unsorted();
+        Sort sort;
 
         if (pageRequest.hasSort()) {
             String[] sortParts = pageRequest.sort().split(",");
@@ -78,7 +78,6 @@ public class ProductRepositoryAdapter implements ProductRepository {
                     : Sort.Direction.ASC;
             sort = Sort.by(direction, property);
         } else {
-            // Default sort by name ascending
             sort = Sort.by(Sort.Direction.ASC, "name");
         }
 

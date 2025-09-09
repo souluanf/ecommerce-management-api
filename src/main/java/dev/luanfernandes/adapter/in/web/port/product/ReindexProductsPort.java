@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,17 +22,13 @@ public interface ReindexProductsPort {
             tags = "Products",
             summary = "Reindex all products - Elasticsearch",
             description = "Reindex all products from database to Elasticsearch - Admin only")
-    @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Reindex completed successfully",
-                content =
-                        @Content(
-                                mediaType = "application/json",
-                                schema = @Schema(implementation = ReindexResponse.class))),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Access denied - Admin only"),
-        @ApiResponse(responseCode = "500", description = "Reindex failed")
-    })
+    @ApiResponse(
+            responseCode = "200",
+            description = "Reindex completed successfully",
+            content =
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ReindexResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    @ApiResponse(responseCode = "403", description = "Access denied - Admin only")
+    @ApiResponse(responseCode = "500", description = "Reindex failed")
     ResponseEntity<ReindexResponse> reindexAllProducts();
 }
