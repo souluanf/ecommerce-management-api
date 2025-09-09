@@ -13,7 +13,7 @@ import org.springframework.kafka.core.KafkaAdmin;
 @Configuration
 public class KafkaTopicConfig {
 
-    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     @Bean
@@ -25,10 +25,7 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic orderPaidTopic() {
-        return TopicBuilder.name("order.paid")
-                .partitions(3)
-                .replicas(1) // Para desenvolvimento, em produção usar 2+
-                .build();
+        return TopicBuilder.name("order.paid").partitions(3).replicas(1).build();
     }
 
     @Bean

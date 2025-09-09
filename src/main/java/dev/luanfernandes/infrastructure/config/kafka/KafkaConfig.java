@@ -18,10 +18,10 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 @Configuration
 public class KafkaConfig {
 
-    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${spring.kafka.consumer.group-id:ecommerce-api-consumer-group}")
+    @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
     @Bean
@@ -31,12 +31,10 @@ public class KafkaConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        // Configurações de confiabilidade
         configProps.put(ProducerConfig.ACKS_CONFIG, "all");
         configProps.put(ProducerConfig.RETRIES_CONFIG, 3);
         configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 
-        // Configurações de performance
         configProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
         configProps.put(ProducerConfig.LINGER_MS_CONFIG, 5);
         configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
@@ -57,11 +55,9 @@ public class KafkaConfig {
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
-        // Configurações de confiabilidade
         configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         configProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
-        // Configurações de deserialização JSON
         configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "dev.luanfernandes.adapter.out.messaging.event");
         configProps.put(
                 JsonDeserializer.VALUE_DEFAULT_TYPE, "dev.luanfernandes.adapter.out.messaging.event.OrderPaidEvent");
@@ -75,10 +71,8 @@ public class KafkaConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
 
-        // Configuração de ACK manual
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
 
-        // Configuração de concorrência
         factory.setConcurrency(3);
 
         return factory;

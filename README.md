@@ -1,38 +1,125 @@
 # Ecommerce Management API
 
-"Elasticsearch configurado sem autenticação para simplicidade do ambiente de desenvolvimento e avaliação"
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=coverage)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=bugs)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=souluanf_fecommerce-management-api)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=souluanf_fecommerce-management-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=souluanf_golden-raspberry-awards-api)
+Sistema de gerenciamento de pedidos e produtos para e-commerce desenvolvido com Spring Boot, seguindo princípios de Clean Architecture e padrões de desenvolvimento empresarial.
 
 ## Sumário
 
 - [Funcionalidades](#funcionalidades)
-- [Autenticação JWT](#autenticação-jwt)
-- [Configuração de Segurança](#configuração-de-segurança)
-- [Swagger/OpenAPI](#swaggeropenapi)
+- [Tecnologias](#tecnologias)
+- [Padrões e Arquitetura](#padrões-e-arquitetura)
+- [Swagger](#swagger)
 - [Requisitos](#requisitos)
 - [Configuração](#configuração)
 - [Execução](#execução)
-    - [Executando a Aplicação com Maven](#executando-a-aplicação-com-maven)
-    - [Executando a Aplicação com Docker Compose](#executando-a-aplicação-com-docker-compose)
-- [Acesso ao Banco de Dados](#acesso-ao-banco-de-dados)
-    - [Credenciais](#credenciais)
 - [Contato](#contato)
 
 ## Funcionalidades
 
-Esta API oferece um sistema completo de e-commerce com as seguintes funcionalidades:
+### Autenticação e Autorização
+- Autenticação JWT com Spring Security
+- Perfis de usuário (Admin/User)
+- Controle de acesso baseado em roles
 
+### Gestão de Produtos
+- CRUD completo de produtos
+- Busca avançada com Elasticsearch
+- Indexação automática
+- Controle de estoque com tratamento de race conditions
+- Filtros por categoria, nome e faixa de preço
+- Busca com tolerância a erros de digitação
+
+### Gestão de Pedidos
+- Criação de pedidos com múltiplos produtos
+- Validação de estoque em tempo real
+- Status automático (PENDENTE/PAGO/CANCELADO)
+- Processamento de pagamentos
+- Atualização assíncrona de estoque via eventos
+
+### Relatórios Analíticos
+- Top 5 usuários que mais compraram
+- Ticket médio por usuário
+- Faturamento total do mês atual
+- Filtros por período de datas
+
+### Busca e Pesquisa
+- 8 endpoints de busca especializados
+- Busca fuzzy com tolerância a erros
+- Autocomplete e sugestões
+- Paginação e ordenação
+- Apenas produtos disponíveis em estoque
+
+### Mensageria
+- Eventos assíncronos com Kafka
+- Consumer para atualização de estoque
+- Dead Letter Queue para tratamento de falhas
+- Idempotência implementada
+
+
+## Tecnologias
+
+### Core
+- Java 21
+- Spring Boot 3.5.5
+- Spring Security
+- Spring Data JPA
+- Maven 3.6+
+
+### Banco de Dados
+- MySQL 8.0
+- Flyway (migrations)
+
+### Busca
+- Elasticsearch 8.0
+- Spring Data Elasticsearch
+
+### Mensageria
+- Apache Kafka
+- Spring Kafka
+
+### Documentação
+- OpenAPI 3.0 (Swagger)
+- Swagger UI
+
+### Testes
+- JUnit 5
+- TestContainers
+- Spring Boot Test
+
+### DevOps
+- Docker
+- Docker Compose
+
+## Padrões e Arquitetura
+
+### Arquiteturas
+- Clean Architecture (Hexagonal)
+- Ports and Adapters
+- Domain-Driven Design (DDD)
+
+### Padrões de Design
+- Use Case Pattern
+- Repository Pattern
+- Value Object Pattern
+- Command Query Responsibility Segregation (CQRS)
+- Event-Driven Architecture
+
+### Padrões de Desenvolvimento
+- SOLID Principles
+- Dependency Injection
+- Inversion of Control
+- Transaction Management
+- Exception Handling
+
+### Padrões de Integração
+- Event Sourcing
+- Saga Pattern
+- Circuit Breaker Pattern
+- Retry Pattern com Exponential Backoff
+
+## Swagger
+
+- **OpenAPI UI:** [http://localhost:8080/ecommerce-management/swagger-ui/index.html](http://localhost:8080/ecommerce-management/swagger-ui/index.html)
+- **API Docs:** [http://localhost:8080/ecommerce-management/v3/api-docs](http://localhost:8080/ecommerce-management/v3/api-docs)
 
 ## Requisitos
 
@@ -50,8 +137,6 @@ Esta API oferece um sistema completo de e-commerce com as seguintes funcionalida
 
 ## Execução
 
-### Executando a Aplicação com Docker Compose
-
 Copie as variáveis utilizadas
 
 ```bash
@@ -64,36 +149,13 @@ Execute o comando abaixo:
 docker-compose up -d
 ```
 
-### Acesso à Documentação
+### Autenticação
 
-#### Postman (preferência)
-Ambas as collections estão no diretório `collections`:
-[collections](collections)
+Após a inicialização da aplicação, é necessário criar um perfil de administrador e obter o token de autenticação para fazer as requisições aos endpoints protegidos.
 
-Importe ambas as collections para o Postman e teste os serviços
-
-#### OpenAPI
-
-- **OpenApi UI:** [http://localhost:8080/ecommerce-management/swagger-ui/index.html](http://localhost:8080/ecommerce-management/swagger-ui/index.html)
-
-### Credenciais
-
-#### Serviços
-
-| **Serviço** |   **URL**   | **Username** | **Password** | **Database** | **Port** |
-|:-----------:|:-----------:|:------------:|:------------:|:------------:|:--------:|
-|   `MySQL`   | `localhoat` | `finance_db` | `finance_db` | `finance_db` |  `3306`  |
-| `Rabbit MQ` | `localhoat` |  `rabbitmq`  |  `rabbitmq`  |  `rabbitmq`  | `15672`  |
-
-#### Auth
-
-| **Username** | **Password** |
-|:------------:|:------------:|
-|   `admin`    |   `admin`    |
-
-## Desenho da solução
-
-![finance-management-java.png](ecommerce-management-api.png)
+1. **Criar usuário admin:** Use o endpoint `/auth/register` para criar um usuário com perfil ADMIN (já retorna o token)
+2. **Obter token:** Use o endpoint `/auth/login` para obter o token JWT
+3. **Usar token:** Adicione o token no header `Authorization: Bearer {token}` em todas as requisições
 
 ## Contato
 

@@ -8,7 +8,6 @@ RUN mvn package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build-env /app/target/*.jar /app/app.jar
-RUN chmod +x /app/wait-for-it.sh
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 EXPOSE 8080

@@ -49,7 +49,7 @@ spring:
     default-property-inclusion: non_null
     
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${ecommerce-management.kafka.bootstrap-servers}
     
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -70,16 +70,15 @@ spring:
         spring.json.type.mapping: orderPaid:dev.luanfernandes.adapter.out.messaging.event.OrderPaidEvent
       auto-offset-reset: earliest
       enable-auto-commit: false
-      
+
     listener:
       ack-mode: manual
       concurrency: 3
 
-  # Elasticsearch Configuration  
   elasticsearch:
-    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME:elastic}
-    password: ${ELASTICSEARCH_PASSWORD:changeme}
+    uris: ${ecommerce-management.elasticsearch.uris}
+    username: ${ecommerce-management.elasticsearch.username}
+    password: ${ecommerce-management.elasticsearch.password}
     connection-timeout: 5s
     socket-timeout: 30s
 

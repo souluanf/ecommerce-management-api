@@ -10,19 +10,19 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @EnableElasticsearchRepositories(basePackages = "dev.luanfernandes.adapter.out.search.repository")
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
-    @Value("${spring.elasticsearch.uris:http://localhost:9200}")
+    @Value("${spring.elasticsearch.uris}")
     private String elasticsearchUris;
 
-    @Value("${spring.elasticsearch.username:elastic}")
+    @Value("${spring.elasticsearch.username}")
     private String username;
 
-    @Value("${spring.elasticsearch.password:changeme}")
+    @Value("${spring.elasticsearch.password}")
     private String password;
 
-    @Value("${spring.elasticsearch.connection-timeout:5s}")
+    @Value("${spring.elasticsearch.connection-timeout}")
     private String connectionTimeout;
 
-    @Value("${spring.elasticsearch.socket-timeout:30s}")
+    @Value("${spring.elasticsearch.socket-timeout}")
     private String socketTimeout;
 
     @Override
